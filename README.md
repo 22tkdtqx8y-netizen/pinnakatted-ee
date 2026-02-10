@@ -1,6 +1,6 @@
 # Pinnakatted.ee
 
-Next.js veebisait PUR-soojustuse ja polüurea hüdroisolatsiooni teenuste jaoks. App Router, TypeScript, Tailwind CSS, Framer Motion. Deploy Cloudflare Pages’i jaoks valmis.
+Next.js veebisait PUR-soojustuse ja polüurea hüdroisolatsiooni teenuste jaoks. Deploy Cloudflare Pages. App Router, TypeScript, Tailwind CSS, Framer Motion. Deploy Cloudflare Pages’i jaoks valmis.
 
 ## Nõuded
 
