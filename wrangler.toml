@@ -1,0 +1,8 @@
+# Cloudflare Workers: staatilise saidi (out/) deploy.
+# Build: npm run build → out/
+# Deploy: npx wrangler deploy
+name = "pinnakatted"
+compatibility_date = "2026-02-10"
+
+[assets]
+directory = "./out"
