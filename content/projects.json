@@ -1,0 +1,102 @@
+[
+  {
+    "slug": "pur-soojustus-tallinn-2024",
+    "title": "PUR soojustus – eramaja katus, Tallinn",
+    "serviceType": "pur",
+    "location": "Tallinn",
+    "date": "2024-08",
+    "coverImage": "/images/projects/20230715_120606.webp",
+    "images": [
+      "/images/projects/20230715_120606.webp",
+      "/images/projects/IMG-20250823-WA0003.webp"
+    ],
+    "summary": "Pööningu PUR-soojustus eramajale Tallinnas. Pindala umbes 120 m², paksus 200 mm.",
+    "seo": {
+      "title": "PUR soojustus – eramaja katus, Tallinn",
+      "description": "Tehtud töö: PUR soojustus eramaja pööningule Tallinnas. Pindala 120 m², paksus 200 mm."
+    }
+  },
+  {
+    "slug": "polurea-mahuti-tartu-2024",
+    "title": "PUR soojustus – Tartu",
+    "serviceType": "pur",
+    "location": "Tartu",
+    "date": "2024-06",
+    "coverImage": "/images/projects/324165356_710178937479291_138649550559913827_n.webp",
+    "images": [
+      "/images/projects/324165356_710178937479291_138649550559913827_n.webp"
+    ],
+    "summary": "PUR-soojustustöö Tartu piirkonnas.",
+    "seo": {
+      "title": "PUR soojustus – Tartu",
+      "description": "Tehtud töö: PUR soojustus Tartus."
+    }
+  },
+  {
+    "slug": "pur-sein-soojustus-parnu-2024",
+    "title": "PUR seinasoojustus – eramaja, Pärnu",
+    "serviceType": "pur",
+    "location": "Pärnu",
+    "date": "2024-05",
+    "coverImage": "/images/projects/20240508_143950.webp",
+    "images": [
+      "/images/projects/20240508_143950.webp",
+      "/images/projects/20240508_143955.webp"
+    ],
+    "summary": "Välisseina PUR-soojustus eramajale Pärnu lähistel. Paksus 150 mm.",
+    "seo": {
+      "title": "PUR seinasoojustus – eramaja, Pärnu",
+      "description": "Tehtud töö: PUR seinasoojustus eramajale Pärnu piirkonnas. Paksus 150 mm."
+    }
+  },
+  {
+    "slug": "polurea-katus-laane-virumaa-2024",
+    "title": "PUR soojustus – Lääne-Virumaa",
+    "serviceType": "pur",
+    "location": "Lääne-Virumaa",
+    "date": "2024-07",
+    "coverImage": "/images/projects/322245393_553407460031260_2254603080890993933_n.webp",
+    "images": [
+      "/images/projects/322245393_553407460031260_2254603080890993933_n.webp",
+      "/images/projects/324545540_1876795079350847_772508534448230051_n.webp"
+    ],
+    "summary": "PUR-soojustustöö Lääne-Virumaal.",
+    "seo": {
+      "title": "PUR soojustus – Lääne-Virumaa",
+      "description": "Tehtud töö: PUR soojustus Lääne-Virumaal."
+    }
+  },
+  {
+    "slug": "pur-vundament-sokkel-harju-2024",
+    "title": "PUR vundament/sokkel – eramaja, Harjumaa",
+    "serviceType": "pur",
+    "location": "Harjumaa",
+    "date": "2024-04",
+    "coverImage": "/images/projects/66643082_2982258651816732_6108708238226620416_n.webp",
+    "images": [
+      "/images/projects/66643082_2982258651816732_6108708238226620416_n.webp"
+    ],
+    "summary": "Vundamendi ja sokli soojustus PUR-vahendiga. Niiskuskaitse ja soojusisolatsioon.",
+    "seo": {
+      "title": "PUR vundament/sokkel – eramaja, Harjumaa",
+      "description": "Tehtud töö: vundamendi ja sokli PUR-soojustus eramajale Harjumaal."
+    }
+  },
+  {
+    "slug": "polurea-bassein-saaremaa-2023",
+    "title": "PUR soojustus – Saaremaa",
+    "serviceType": "pur",
+    "location": "Saaremaa",
+    "date": "2023-09",
+    "coverImage": "/images/projects/20230425_143700.webp",
+    "images": [
+      "/images/projects/20230425_143700.webp",
+      "/images/projects/324967188_569576321849091_9195154709649754063_n.webp"
+    ],
+    "summary": "PUR-soojustustöö Saaremaal.",
+    "seo": {
+      "title": "PUR soojustus – Saaremaa",
+      "description": "Tehtud töö: PUR soojustus Saaremaal."
+    }
+  }
+]
