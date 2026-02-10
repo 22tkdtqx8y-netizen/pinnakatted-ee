@@ -32,15 +32,22 @@ Avage brauseris **http://localhost:3010** (projekt kasutab porti 3010).
 npm run build
 ```
 
+## Kontaktivorm ja e-kirjad
+
+Kontaktivormid (kontaktileht, PUR-kalkulaatori päring) saadavad e-kirjad **FormSubmit** kaudu otse kliendi e-mailile (`lib/company.ts` → `company.email`). Vormid töötavad staatilise deploy’iga (Cloudflare Pages, `out/`), serverit pole vaja.
+
+- **Esimene kord:** FormSubmit saadab `company.email` aadressile kinnituse – klient peab lingile klõpsama, et päringud hakkaksid kohale jõudma.
+- **Turnstile** jääb vormidele spamikaitseks; FormSubmiti oma captcha on välja lülitatud (`_captcha: false`).
+
 ## Keskkonnamuutujad
 
 | Muutuja | Kirjeldus | Näide |
 |--------|------------|--------|
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile widgeti site key (vormi spam-kaitse) | `1x00000000000000000000AA` (test) |
-| `TURNSTILE_SECRET_KEY` | Turnstile secret key serveri kontrolliks | (Cloudflare Turnstile dashboard) |
+| `TURNSTILE_SECRET_KEY` | Turnstile secret key (vajalik ainult kui kasutad `/api/contact` serveris) | (Cloudflare Turnstile dashboard) |
 
 - Ilma `TURNSTILE_SECRET_KEY`-ta (nt arenduses) aktsepteeritakse test-token.
-- Tootmises määra mõlemad väärtused Cloudflare Turnstile’i kaudu.
+- E-kirjade saatmine toimub FormSubmiti kaudu brauserist; serveri võtmed pole selleks vajalikud.
 
 ## Deploy: GitHub → Cloudflare Pages (live)
 

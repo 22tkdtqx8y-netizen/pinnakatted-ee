@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { company } from "@/lib/company";
+
+const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${encodeURIComponent(company.email)}`;
 
 const Turnstile = dynamic(
   () => import("@marsidev/react-turnstile").then((m) => m.Turnstile),
@@ -74,25 +77,25 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
         const body = new FormData();
         body.append("name", form.name);
         body.append("email", form.email);
-        body.append("phone", form.phone);
+        body.append("phone", form.phone ?? "");
         body.append("message", form.message);
-        body.append("turnstileToken", form.turnstileToken);
-        if (prefill.type) body.append("type", prefill.type);
-        if (prefill.pindala_m2) body.append("pindala_m2", prefill.pindala_m2);
-        if (prefill.paksus_mm) body.append("paksus_mm", prefill.paksus_mm ?? "");
-        if (prefill.konstruktsioon) body.append("konstruktsioon", prefill.konstruktsioon);
-        if (prefill.maht_m3) body.append("maht_m3", prefill.maht_m3 ?? "");
-        if (prefill.pinna_tyyp) body.append("pinna_tyyp", prefill.pinna_tyyp ?? "");
-        if (prefill.ettevalmistus) body.append("ettevalmistus", prefill.ettevalmistus ?? "");
-        if (form.thermograafia) body.append("thermograafia", "1");
-        files.forEach((f) => body.append("images", f));
+        body.append("_subject", "Pinnakatted.ee – uus päring");
+        body.append("_replyto", form.email);
+        body.append("_template", "table");
+        body.append("_captcha", "false");
+        body.append("Termograafia soov", form.thermograafia ? "Jah" : "Ei");
+        if (prefill.type) body.append("Tüüp", prefill.type);
+        if (prefill.pindala_m2) body.append("Pindala (m²)", prefill.pindala_m2);
+        if (prefill.paksus_mm) body.append("Paksus (mm)", prefill.paksus_mm ?? "");
+        if (prefill.konstruktsioon) body.append("Konstruktsioon", prefill.konstruktsioon ?? "");
+        if (prefill.maht_m3) body.append("Maht (m³)", prefill.maht_m3 ?? "");
+        if (prefill.pinna_tyyp) body.append("Pinna tüüp", prefill.pinna_tyyp ?? "");
+        if (prefill.ettevalmistus) body.append("Ettevalmistus", prefill.ettevalmistus ?? "");
+        files.forEach((f) => body.append("attachment", f));
 
-        const res = await fetch("/api/contact", {
-          method: "POST",
-          body,
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
+        const res = await fetch(FORMSUBMIT_URL, { method: "POST", body });
+        const data = (await res.json().catch(() => ({}))) as { success?: boolean; message?: string };
+        if (!res.ok || data.success === false) {
           setErrorMessage(data.message ?? "Midagi läks valesti. Proovi uuesti.");
           setStatus("error");
           return;

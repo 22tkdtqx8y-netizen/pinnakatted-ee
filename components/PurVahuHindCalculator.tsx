@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { company } from "@/lib/company";
 import { PUR_VAHU_HINNAD } from "@/content/purHinnad";
 
 const Turnstile = dynamic(
@@ -569,24 +570,27 @@ function PurVahuHindForm({
     e.preventDefault();
     onSubmitting();
     try {
-      const body = new FormData();
-      body.append("name", name);
-      body.append("email", email);
-      body.append("phone", phone);
-      body.append("message", [message, "", "--- Kalkulaatori kokkuvõte ---", summaryText].filter(Boolean).join("\n\n"));
-      body.append("turnstileToken", turnstileToken);
-      body.append("type", "pur");
-      body.append("pindala_m2", String(calculatorParams.pindalaNum));
-      body.append("paksus_mm", String(calculatorParams.paksusMm));
-      body.append("konstruktsioon", calculatorParams.konstruktsioon);
-      body.append("maht_m3", calculatorParams.mahtM3.toFixed(2));
-      if (aadress) body.append("aadress", aadress);
-      if (thermograafia) body.append("thermograafia", "1");
-      files.forEach((f) => body.append("images", f));
-
-      const res = await fetch("/api/contact", { method: "POST", body });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      const formSubmitUrl = `https://formsubmit.co/ajax/${encodeURIComponent(company.email)}`;
+      const submitBody = new FormData();
+      submitBody.append("name", name);
+      submitBody.append("email", email);
+      submitBody.append("phone", phone ?? "");
+      submitBody.append("message", [message, "", "--- Kalkulaatori kokkuvõte ---", summaryText].filter(Boolean).join("\n\n"));
+      submitBody.append("_subject", "Pinnakatted.ee – päring (PUR kalkulaator)");
+      submitBody.append("_replyto", email);
+      submitBody.append("_template", "table");
+      submitBody.append("_captcha", "false");
+      submitBody.append("Tüüp", "pur");
+      submitBody.append("Pindala (m²)", String(calculatorParams.pindalaNum));
+      submitBody.append("Paksus (mm)", String(calculatorParams.paksusMm));
+      submitBody.append("Konstruktsioon", calculatorParams.konstruktsioon);
+      submitBody.append("Maht (m³)", calculatorParams.mahtM3.toFixed(2));
+      if (aadress) submitBody.append("Aadress / vald", aadress);
+      submitBody.append("Termograafia soov", thermograafia ? "Jah" : "Ei");
+      files.forEach((f) => submitBody.append("attachment", f));
+      const res = await fetch(formSubmitUrl, { method: "POST", body: submitBody });
+      const data = (await res.json().catch(() => ({}))) as { success?: boolean; message?: string };
+      if (!res.ok || data.success === false) {
         onError(data.message ?? "Midagi läks valesti. Proovi uuesti.");
         return;
       }
