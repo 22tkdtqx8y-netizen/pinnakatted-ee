@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
+import { useLocale } from "@/lib/LocaleContext";
+import { getMessages } from "@/messages";
 
-const BENEFITS = [
-  { text: "Vähendab soojuskadu – soojem kodu, madalamad küttekulud" },
-  { text: "Õhukindlus – täidab praod, vähem tuult ja niiskust" },
-  { text: "Kiire paigaldus – tulemused juba 1–2 päevaga" },
-];
-
-const TRUST_LINE = "10+ aastat kogemust · Töögarantii · Teenindame kogu Eestit";
+const BENEFIT_KEYS = ["benefit1", "benefit2", "benefit3"] as const;
 
 export function HeroHome() {
+  const locale = useLocale();
+  const t = getMessages(locale).home.hero;
+  const nav = getMessages(locale).common.nav;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-20 sm:py-28 lg:py-36">
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20" aria-hidden />
@@ -23,7 +23,7 @@ export function HeroHome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          PUR soojustus üle Eesti
+          {t.title}
         </motion.h1>
         <motion.p
           className="mx-auto mt-4 max-w-2xl text-lg text-slate-300 sm:text-xl"
@@ -31,12 +31,12 @@ export function HeroHome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.05 }}
         >
-          Pihustame ja injekteerime PUR-vahu – soojapidav, õhutihe ja kiire lahendus.
+          {t.subtitle}
         </motion.p>
         <ul className="mx-auto mt-6 max-w-xl space-y-2 text-left sm:text-center">
-          {BENEFITS.map((b, i) => (
+          {BENEFIT_KEYS.map((key, i) => (
             <motion.li
-              key={b.text}
+              key={key}
               className="flex items-center gap-2 text-slate-200 sm:justify-center"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ export function HeroHome() {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </span>
-              <span>{b.text}</span>
+              <span>{t[key]}</span>
             </motion.li>
           ))}
         </ul>
@@ -57,7 +57,7 @@ export function HeroHome() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.25 }}
         >
-          {TRUST_LINE}
+          {t.trustLine}
         </motion.p>
         <motion.div
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
@@ -66,14 +66,14 @@ export function HeroHome() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Button asChild variant="primary" size="lg" className="min-h-[48px] min-w-[180px]">
-            <Link href="/kontakt">Küsi pakkumist</Link>
+            <Link href="/kontakt">{nav.kusiPakkumist}</Link>
           </Button>
           <Button
             asChild
             size="lg"
             className="min-h-[48px] min-w-[180px] border-2 border-white bg-transparent text-white hover:bg-white/10"
           >
-            <Link href="/pur-vahu-hind">Pur vahu hind</Link>
+            <Link href="/pur-vahu-hind">{nav.purVahuHind}</Link>
           </Button>
         </motion.div>
       </div>

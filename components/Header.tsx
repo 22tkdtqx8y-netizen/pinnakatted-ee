@@ -3,18 +3,23 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ButtonLink } from "./ui/Button";
+import { LangSwitcher } from "./LangSwitcher";
+import { useLocale } from "@/lib/LocaleContext";
+import { getMessages } from "@/messages";
 
 const navLinks = [
-  { href: "/teenused", label: "Teenused" },
-  { href: "/thermograafia", label: "Thermograafia" },
-  { href: "/tehtud-tood", label: "Tehtud tööd" },
-  { href: "/remondilaen", label: "LHV remondilaen" },
-  { href: "/materjalid", label: "Materjalid" },
-  { href: "/kontakt", label: "Kontakt" },
+  { href: "/teenused", key: "teenused" as const },
+  { href: "/thermograafia", key: "thermograafia" as const },
+  { href: "/tehtud-tood", key: "tehtudTood" as const },
+  { href: "/remondilaen", key: "remondilaen" as const },
+  { href: "/materjalid", key: "materjalid" as const },
+  { href: "/kontakt", key: "kontakt" as const },
 ];
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const locale = useLocale();
+  const t = getMessages(locale).common.nav;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -22,7 +27,7 @@ export function Header() {
         <Link
           href="/"
           className="flex items-center shrink-0"
-          aria-label="Pinnakatted.ee avaleht"
+          aria-label={`Pinnakatted.ee ${t.avaleht}`}
         >
           <img
             src="/images/logo-pinnakatted.png"
@@ -40,17 +45,18 @@ export function Header() {
               href={link.href}
               className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             >
-              {link.label}
+              {t[link.key]}
             </Link>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
+          <LangSwitcher />
           <ButtonLink href="/kontakt" size="sm" className="hidden sm:inline-flex whitespace-nowrap">
-            Küsi pakkumist
+            {t.kusiPakkumist}
           </ButtonLink>
           <ButtonLink href="/pur-vahu-hind" variant="primary" size="sm" className="hidden sm:inline-flex whitespace-nowrap">
-            Pur vahu hind
+            {t.purVahuHind}
           </ButtonLink>
 
           <button
@@ -58,7 +64,7 @@ export function Header() {
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 md:hidden"
             onClick={() => setMobileOpen((o) => !o)}
             aria-expanded={mobileOpen}
-            aria-label={mobileOpen ? "Sulge menüü" : "Ava menüü"}
+            aria-label={mobileOpen ? t.sulgeMenu : t.avaMenu}
           >
             <span className="sr-only">Menüü</span>
             {mobileOpen ? (
@@ -87,15 +93,15 @@ export function Header() {
                 className="rounded-lg px-4 py-3 text-base font-medium text-slate-700 hover:bg-slate-100"
                 onClick={() => setMobileOpen(false)}
               >
-                {link.label}
+                {t[link.key]}
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-slate-200 pt-4">
               <ButtonLink href="/kontakt" className="w-full justify-center" onClick={() => setMobileOpen(false)}>
-                Küsi pakkumist
+                {t.kusiPakkumist}
               </ButtonLink>
               <ButtonLink href="/pur-vahu-hind" variant="primary" className="w-full justify-center" onClick={() => setMobileOpen(false)}>
-                Arvuta hind
+                {t.arvutaHind}
               </ButtonLink>
             </div>
           </nav>
