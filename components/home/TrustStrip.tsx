@@ -1,20 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-const trustItems = [
-  { label: "Aastate kogemus", value: "10+" },
-  { label: "Garantii", value: "Kvaliteet" },
-  { label: "Teeninduspiirkond", value: "Kogu Eesti" },
-  { label: "Hinnangud", value: "5 ★" },
-];
+import { useLocale } from "@/lib/LocaleContext";
+import { getMessages } from "@/messages";
 
 export function TrustStrip() {
+  const locale = useLocale();
+  const items = getMessages(locale).home.trustStrip;
+
   return (
     <section className="border-b border-slate-200 bg-white py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          {trustItems.map((item, i) => (
+          {items.map((item, i) => (
             <motion.div
               key={item.label}
               className="text-center"

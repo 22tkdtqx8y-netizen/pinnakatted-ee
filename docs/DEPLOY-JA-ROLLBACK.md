@@ -2,38 +2,78 @@
 
 ## Live vs local
 
-- **Live pinnakatted.ee** jookseb juba **Cloudflare Workeris** (DNS suunatud Cloudflare’i ja Workerile). See tähendab, et live’il on sama **Next.js** build (sama repo, sama sisu) mis localis välja arvatud see, mida sa pole veel deploy’inud.
-- **Local** on sama Next.js projekt; soomekeel ja viimased muudatused on siin. Kui deploy’d, siis live’il on **samasugune sisu + soomekeel**.
+- **Live pinnakatted.ee** jookseb **Cloudflare Workeris**. **Local** on sama Next.js projekt; kui deploy'd, siis live'il on samasugune sisu + soomekeel.
 
-### 1. Enne deploy’d – tee turvaline punkt
+---
+
+## Enne uue versiooni deploy't – märgi praegune live (kohustuslik rollback'i jaoks)
+
+**Ühe käsuga rollback töötab ainult siis, kui oled enne deploy't loonud tag'i `live-stable`.**
+
+Praegu live'il olev commit tuleb enne uut deploy't tag'iga kinnitada. Kui sa tead, milline commit on praegu live'il (nt viimane deploy'dud commit):
 
 ```bash
-# 1. Tag versioon enne deploy’d (rollback’i jaoks)
-git add -A
-git commit -m "chore: enne soomekeelse deploy'd"
-git tag -a pre-fi-deploy-$(date +%Y%m%d) -m "Enne soomekeelse versiooni deploy'd live'i"
-
-# 2. Build (sisu = local, sh soomekeel)
-npm run build
-
-# 3. (Soovitus) salvesta praegune out/ varukoopiana, kui varem oled deploy’inud Next.js
-# cp -r out out-backup-$(date +%Y%m%d)
+git tag live-stable <commit-hash>
 ```
 
-### 2. Deploy Cloudflare’i
+Näide: kui live'il on commit `abc1234`:
 
 ```bash
+git tag live-stable abc1234
+```
+
+Kui deploy'd tavaliselt oma praegusest harust (nt `main`) ja live on viimase push'iga sünkroonis, võid enne uute muudatuste push'imist teha:
+
+```bash
+git tag live-stable main
+```
+
+(Tehke see **enne** uue versiooni push'imist ja deploy't.)
+
+---
+
+## Deploy uus versioon live'i
+
+```bash
+npm run build
 npx wrangler deploy
 ```
 
-### 3. Kui midagi läheb tuksi – rollback
+---
 
-Live on juba Next.js Cloudflare Workeris, seega:
+## Ühe käsuga rollback eelmise töötava versiooni peale
 
-- **Cloudflare dashboard:** Workers & Pages → vali projekt "pinnakatted" → **Deployments**. Seal on varasemad deploy’d; vali eelmine töötav versioon ja **"Rollback to this deployment"**. Live läheb tagasi eelmise buildi juurde (ilma soomekeele muudatusteta).
-- **Või koodi kaudu:** `git checkout <eelmine-commit-või-tag>` → `npm run build` → `npx wrangler deploy`.
+Kui midagi läheb pärast deploy't viltu, tõmba live tagasi eelmise (enne deploy't märgitud) versiooni peale:
+
+```bash
+./scripts/rollback-to-live-stable.sh
+```
+
+Skript: checkout'ib `live-stable` tag'i, teeb build'i, deploy'b Cloudflare'i. Pärast rollback'i oled git'is endiselt oma harul; skript teeb lõpus `git checkout -`, et tagasi oma haru juurde.
+
+**Kui tag `live-stable` puudub**, ütleb skript selge errori ja viita sellele dokumendile.
+
+Alternatiiv (ilma skriptita):
+
+```bash
+git checkout live-stable
+npm run build
+npx wrangler deploy
+git checkout -
+```
+
+---
+
+## Rollback Cloudflare dashboard'ist
+
+Workers & Pages → vali projekt → **Deployments** → vali eelmine töötav deploy → **"Rollback to this deployment"**. Ei vaja git'i ega build'i.
+
+---
 
 ## Kokkuvõte
 
-- **Sisu:** Live = sama Next.js kui local (DNS ja Worker juba Cloudflare’is). Deploy’ga lisad livesse soomekeelse versiooni; eesti sisu jääb samaks.
-- **Rollback:** Cloudflare’is "Rollback to previous deployment" või deploy eelmise buildi uuesti.
+| Samm | Tegevus |
+|------|--------|
+| Enne deploy't | `git tag live-stable <commit-praegu-live-il>` |
+| Deploy | `npm run build && npx wrangler deploy` |
+| Rollback ühe käsuga | `./scripts/rollback-to-live-stable.sh` |

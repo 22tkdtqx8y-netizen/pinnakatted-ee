@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { company } from "@/lib/company";
 import { PUR_VAHU_HINNAD } from "@/content/purHinnad";
+import { useLocale } from "@/lib/LocaleContext";
+import { getMessages } from "@/messages";
 
 const Turnstile = dynamic(
   () => import("@marsidev/react-turnstile").then((m) => m.Turnstile),
@@ -25,17 +27,11 @@ const VARU_PERCENT_MAX = 20;
 const VARU_PERCENT = 20; // display default
 
 const KONSTRUKTSIOON_OPTIONS = [
-  { value: "sein", label: "Seinad", subtitle: "Välisseinad, vaheseinad", Icon: IconWall },
-  { value: "katusealune", label: "Katusealune", subtitle: "Katuslae soojustus", Icon: IconRoof },
-  { value: "porand", label: "Põrand", subtitle: "Põrandaalune soojustus", Icon: IconFloor },
-  { value: "vundament-sokkel", label: "Vundament", subtitle: "Sokli ja vundamendi soojustus", Icon: IconFoundation },
+  { value: "sein", Icon: IconWall },
+  { value: "katusealune", Icon: IconRoof },
+  { value: "porand", Icon: IconFloor },
+  { value: "vundament-sokkel", Icon: IconFoundation },
 ] as const;
-
-const VAHU_SUBTITLES: Record<string, string> = {
-  "suletud-pooridega": "Parim soojustuseks ja õhutiheduseks",
-  "avatud-pooriga": "Hingav, sobib pööningutele",
-  sustitav: "Seina- ja vahelae õõnsuste jaoks",
-};
 
 function IconRoof({ className }: { className?: string }) {
   return (
@@ -116,11 +112,10 @@ function CountUp({ value, duration = 400, decimals = 0 }: { value: number; durat
 
 const VUNDAMENT_VALUE = "vundament-sokkel";
 
-// Paksuse kvaliteet (mm): Hea / Väga hea / Suurepärane
-function getPaksuseKvaliteet(mm: number): { label: string; variant: "hea" | "vagahea" | "suurepärane" } {
-  if (mm >= 180) return { label: "Suurepärane", variant: "suurepärane" };
-  if (mm >= 100) return { label: "Väga hea", variant: "vagahea" };
-  return { label: "Hea", variant: "hea" };
+function getPaksuseKvaliteet(mm: number): "hea" | "vagahea" | "suurepärane" {
+  if (mm >= 180) return "suurepärane";
+  if (mm >= 100) return "vagahea";
+  return "hea";
 }
 
 const M2_PER_TÖÖPÄEV = 120; // ~120 m² päevas nagu Aldreht
@@ -144,6 +139,8 @@ function parseNum(val: string, min: number, max: number, fallback: number): numb
 }
 
 export function PurVahuHindCalculator() {
+  const locale = useLocale();
+  const t = getMessages(locale).purVahuHind.calculator;
   const searchParams = useSearchParams();
   const reducedMotion = useReducedMotion();
   const duration = reducedMotion ? 0 : 0.2;
@@ -195,7 +192,9 @@ export function PurVahuHindCalculator() {
   const kokkuKoosKm = kokkuIlmaKm + kmEur;
   const eurPerM2 = pindalaNum > 0 ? kokkuKoosKm / pindalaNum : 0;
 
-  const paksuseKvaliteet = useMemo(() => getPaksuseKvaliteet(paksusMm), [paksusMm]);
+  const paksuseKvaliteetVariant = useMemo(() => getPaksuseKvaliteet(paksusMm), [paksusMm]);
+  const paksuseKvaliteetLabel =
+    paksuseKvaliteetVariant === "suurepärane" ? t.qualitySuurepärane : paksuseKvaliteetVariant === "vagahea" ? t.qualityVagahea : t.qualityHea;
   const tööpäevad = useMemo(() => Math.max(1, Math.ceil(pindalaNum / M2_PER_TÖÖPÄEV)), [pindalaNum]);
 
   const updateUrl = useCallback(
@@ -220,29 +219,32 @@ export function PurVahuHindCalculator() {
   }, [konstruktsioon, vahuTyyp, pindalaNum, paksusMm, updateUrl]);
 
   const summaryText = useMemo(() => {
-    const k = KONSTRUKTSIOON_OPTIONS.find((x) => x.value === konstruktsioon)?.label ?? konstruktsioon;
-    const v = PUR_VAHU_HINNAD.find((x) => x.value === vahuTyyp)?.label ?? vahuTyyp;
+    const k = t.construction[konstruktsioon as keyof typeof t.construction]?.label ?? konstruktsioon;
+    const v = t.foam[vahuTyyp as keyof typeof t.foam]?.label ?? vahuTyyp;
+    const workdayStr = tööpäevad === 1 ? t.summaryWorkday : t.summaryWorkdays;
     return [
-      `Pinna tüüp: ${k}`,
-      `Vahu tüüp: ${v}`,
-      `Pindala: ${pindalaNum} m², paksus: ${paksusMm} mm`,
-      `Vahu kogus: ${mahtM3.toFixed(2)} m³ (+ ${VARU_PERCENT}% varu = ${mahtKoosVaruga.toFixed(2)} m³)`,
-      `Hinnanguline tööaeg: ~${M2_PER_TÖÖPÄEV} m² päevas, ${tööpäevad} ${tööpäevad === 1 ? "tööpäev" : "tööpäeva"}`,
-      `Indikatiivne hind (koos KM): ${Math.round(kokkuKoosKm)} € (≈ ${eurPerM2.toFixed(1)} €/m²)`,
+      `${t.summaryLineSurface} ${k}`,
+      `${t.summaryLineFoam} ${v}`,
+      `${t.summaryLineArea} ${pindalaNum} m², ${t.paksusLabel.toLowerCase()} ${paksusMm} mm`,
+      `${t.summaryLineVolume} ${mahtM3.toFixed(2)} m³ (+ ${VARU_PERCENT}% ${t.summaryVaru} = ${mahtKoosVaruga.toFixed(2)} m³)`,
+      `${t.summaryLineWorktime} ~${M2_PER_TÖÖPÄEV} ${t.summaryPerDay}, ${tööpäevad} ${workdayStr}`,
+      `${t.summaryLinePrice} ${Math.round(kokkuKoosKm)} € (≈ ${eurPerM2.toFixed(1)} ${t.summaryPerM2})`,
     ].join("\n");
-  }, [konstruktsioon, vahuTyyp, pindalaNum, paksusMm, mahtM3, mahtKoosVaruga, tööpäevad, kokkuKoosKm, eurPerM2]);
+  }, [t, konstruktsioon, vahuTyyp, pindalaNum, paksusMm, mahtM3, mahtKoosVaruga, tööpäevad, kokkuKoosKm, eurPerM2]);
 
   return (
     <>
       <div className="md:grid md:grid-cols-2 md:gap-8 md:items-start">
       <div className="space-y-8">
-        {/* Pinna tüüp – 6 võimalust nagu Aldreht */}
         <div>
-          <h3 id="konstruktsioon-label" className="text-sm font-semibold uppercase tracking-wider text-slate-500">Pinna tüüp</h3>
-          <p className="mt-1 text-xs text-slate-500">Vundament = ainult pihustamine (mitte injekteerimine).</p>
+          <h3 id="konstruktsioon-label" className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t.surfaceTypeLabel}</h3>
+          <p className="mt-1 text-xs text-slate-500">{t.surfaceTypeHint}</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3" role="group" aria-labelledby="konstruktsioon-label">
             {KONSTRUKTSIOON_OPTIONS.map((opt) => {
               const Icon = opt.Icon;
+              const c = t.construction[opt.value as keyof typeof t.construction];
+              const label = c?.label ?? opt.value;
+              const subtitle = c?.subtitle ?? "";
               return (
                 <motion.button
                   key={opt.value}
@@ -258,27 +260,27 @@ export function PurVahuHindCalculator() {
                       : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:shadow-md"
                   )}
                   aria-pressed={konstruktsioon === opt.value}
-                  aria-label={`${opt.label} – ${opt.subtitle}`}
+                  aria-label={`${label} – ${subtitle}`}
                 >
                   <Icon className={konstruktsioon === opt.value ? "text-primary-600" : "text-slate-400"} aria-hidden />
-                  <span className="mt-2 block font-semibold text-slate-900">{opt.label}</span>
-                  <span className="mt-0.5 block text-xs text-slate-500">{opt.subtitle}</span>
+                  <span className="mt-2 block font-semibold text-slate-900">{label}</span>
+                  <span className="mt-0.5 block text-xs text-slate-500">{subtitle}</span>
                 </motion.button>
               );
             })}
           </div>
         </div>
 
-        {/* Vahu tüüp – premium card selection; disable Süstitav when konstruktsioon = Vundament/Sokkel */}
         <div>
-          <h3 id="vahu-tyyp-label" className="text-sm font-semibold uppercase tracking-wider text-slate-500">Vahu tüüp</h3>
-          <p className="mt-1 text-xs text-slate-500">Suletud pooridega on tihedam ja veekindlam; avatud hingavam (pööningud). Süstitav on seina- ja vahelae õõnsustele – mitte vundamentidele.</p>
+          <h3 id="vahu-tyyp-label" className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t.foamTypeLabel}</h3>
+          <p className="mt-1 text-xs text-slate-500">{t.foamTypeHint}</p>
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3" role="group" aria-labelledby="vahu-tyyp-label">
             {PUR_VAHU_HINNAD.map((opt) => {
               const VahuIcon = VAHU_ICONS[opt.value];
-              const subtitle = VAHU_SUBTITLES[opt.value] ?? "";
+              const foamT = t.foam[opt.value as keyof typeof t.foam];
+              const label = foamT?.label ?? opt.label;
+              const subtitle = foamT?.subtitle ?? "";
               const disabled = opt.value === "sustitav" && sustitavDisabled;
-              const whyDisabled = "Injekteerimist kasutatakse seina- ja vahelae õõnsuste täitmiseks; vundamentidele ja soklitele kasutatakse ainult pihustatavat vahu.";
               return (
                 <motion.button
                   key={opt.value}
@@ -296,11 +298,11 @@ export function PurVahuHindCalculator() {
                     disabled && "cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400 opacity-75"
                   )}
                   aria-pressed={vahuTyyp === opt.value}
-                  aria-label={disabled ? `${opt.label} – pole saadaval vundament/sokkel puhul. ${whyDisabled}` : `${opt.label}, ${subtitle}, ${opt.eurPerM3} €/m³`}
-                  title={disabled ? whyDisabled : undefined}
+                  aria-label={disabled ? `${label} – ${t.foamDisabledWhy}` : `${label}, ${subtitle}, ${opt.eurPerM3} €/m³`}
+                  title={disabled ? t.foamDisabledWhy : undefined}
                 >
                   {VahuIcon && <VahuIcon className={vahuTyyp === opt.value ? "text-primary-600" : "text-slate-400"} aria-hidden />}
-                  <span className="mt-2 block font-semibold text-slate-900">{opt.label}</span>
+                  <span className="mt-2 block font-semibold text-slate-900">{label}</span>
                   <span className="mt-0.5 block text-xs text-slate-500">{subtitle}</span>
                   <span className="mt-2 block text-sm font-medium text-slate-600">{opt.eurPerM3} €/m³ + km</span>
                 </motion.button>
@@ -309,15 +311,14 @@ export function PurVahuHindCalculator() {
           </div>
           {sustitavDisabled && (
             <p className="mt-3 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm" role="status">
-              <strong>Miks süstitav on välja lülitatud?</strong> Injekteeritavat PUR-vahu kasutatakse seina- ja vahelae õõnsuste täitmiseks. Vundamentidele ja soklitele kasutatakse ainult pihustatavat vahu.
+              <strong>{t.foamDisabledNoteTitle}</strong> {t.foamDisabledNoteBody}
             </p>
           )}
         </div>
 
-        {/* Pindala – slider + input (touch-friendly), step 1 */}
         <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 shadow-sm">
           <label htmlFor="pur-pindala" className="block text-sm font-semibold text-slate-700">
-            Pindala (m²)
+            {t.pindalaLabel}
           </label>
           <div className="mt-3 flex flex-wrap items-center gap-4">
             <input
@@ -332,7 +333,7 @@ export function PurVahuHindCalculator() {
               aria-valuemin={PINDALA_MIN}
               aria-valuemax={PINDALA_MAX}
               aria-valuenow={pindalaNum}
-              aria-valuetext={`${pindalaNum} ruutmeetrit`}
+              aria-valuetext={`${pindalaNum} m²`}
             />
             <input
               type="number"
@@ -342,18 +343,17 @@ export function PurVahuHindCalculator() {
               inputMode="decimal"
               value={pindala}
               onChange={(e) => setPindala(e.target.value)}
-              placeholder="nt 120"
+              placeholder="120"
               className="w-28 rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-right text-lg font-semibold text-slate-900 focus:border-primary-500 focus:ring-primary-500"
-              aria-label="Pindala m² käsitsi"
+              aria-label={t.pindalaLabel}
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">Praegune väärtus: {pindalaNum} m²</p>
+          <p className="mt-1 text-xs text-slate-500">{t.currentValue} {pindalaNum} m²</p>
         </div>
 
-        {/* Paksus – slider + input (touch-friendly), step 5 */}
         <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 shadow-sm">
           <label htmlFor="pur-paksus" className="block text-sm font-semibold text-slate-700">
-            Kihi paksus (mm)
+            {t.paksusLabel}
           </label>
           <div className="mt-3 flex flex-wrap items-center gap-4">
             <input
@@ -368,7 +368,7 @@ export function PurVahuHindCalculator() {
               aria-valuemin={PAKSUS_MIN}
               aria-valuemax={PAKSUS_MAX}
               aria-valuenow={paksusMm}
-              aria-valuetext={`${paksusMm} millimeetrit`}
+              aria-valuetext={`${paksusMm} mm`}
             />
             <input
               type="number"
@@ -378,21 +378,21 @@ export function PurVahuHindCalculator() {
               value={paksusMm}
               onChange={(e) => setPaksusMm(parseNum(e.target.value, PAKSUS_MIN, PAKSUS_MAX, PAKSUS_DEFAULT))}
               className="w-28 rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-right text-lg font-semibold text-slate-900 focus:border-primary-500 focus:ring-primary-500"
-              aria-label="Paksus mm"
+              aria-label={t.paksusLabel}
             />
           </div>
-          <p className="mt-1 text-xs text-slate-500">Praegune väärtus: {paksusMm} mm</p>
+          <p className="mt-1 text-xs text-slate-500">{t.currentValue} {paksusMm} mm</p>
           <p className="mt-2 flex items-center gap-2 text-sm" role="status" aria-live="polite">
-            <span className="text-slate-500">Soojustuskihi hindamine:</span>
+            <span className="text-slate-500">{t.qualityLabel}</span>
             <span
               className={cn(
                 "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
-                paksuseKvaliteet.variant === "suurepärane" && "bg-emerald-100 text-emerald-800",
-                paksuseKvaliteet.variant === "vagahea" && "bg-primary-100 text-primary-800",
-                paksuseKvaliteet.variant === "hea" && "bg-slate-100 text-slate-700"
+                paksuseKvaliteetVariant === "suurepärane" && "bg-emerald-100 text-emerald-800",
+                paksuseKvaliteetVariant === "vagahea" && "bg-primary-100 text-primary-800",
+                paksuseKvaliteetVariant === "hea" && "bg-slate-100 text-slate-700"
               )}
             >
-              {paksuseKvaliteet.label}
+              {paksuseKvaliteetLabel}
             </span>
           </p>
         </div>
@@ -408,59 +408,59 @@ export function PurVahuHindCalculator() {
         className="rounded-2xl border-2 border-primary-200 bg-gradient-to-b from-white to-primary-50/30 p-6 shadow-xl md:sticky md:top-8 md:mt-0"
         aria-labelledby="kokkuvote-heading"
       >
-        <h3 id="kokkuvote-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-500">Kokkuvõte</h3>
+        <h3 id="kokkuvote-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t.summaryHeading}</h3>
         <div className="mt-4 space-y-2.5 text-sm">
           <div className="flex justify-between text-slate-600">
-            <span>Vahu kogus</span>
+            <span>{t.summaryVahuKogus}</span>
             <span className="font-medium tabular-nums">
               <CountUp value={mahtM3} duration={reducedMotion ? 0 : 300} decimals={2} /> m³
             </span>
           </div>
           <div className="flex justify-between text-slate-600">
-            <span>+ {VARU_PERCENT_MIN}–{VARU_PERCENT_MAX}% varu</span>
+            <span>+ {VARU_PERCENT_MIN}–{VARU_PERCENT_MAX}% {t.summaryVaru}</span>
             <span className="font-medium tabular-nums">
               (<CountUp value={mahtKoosVaruga} duration={reducedMotion ? 0 : 300} decimals={2} /> m³)
             </span>
           </div>
           <div className="flex justify-between text-slate-600">
-            <span>Hinnanguline tööaeg</span>
+            <span>{t.summaryTööaeg}</span>
             <span className="font-medium tabular-nums">
-              ~{M2_PER_TÖÖPÄEV} m² päevas · {tööpäevad} {tööpäevad === 1 ? "tööpäev" : "tööpäeva"}
+              ~{M2_PER_TÖÖPÄEV} {t.summaryPerDay} · {tööpäevad} {tööpäevad === 1 ? t.summaryWorkday : t.summaryWorkdays}
             </span>
           </div>
           <div className="my-2 border-t border-slate-200 pt-2" aria-hidden />
           <div className="flex justify-between text-slate-600">
-            <span>Materjal</span>
+            <span>{t.summaryMaterjal}</span>
             <span className="font-semibold tabular-nums text-slate-900">
               <CountUp value={Math.round(materjalEur)} duration={reducedMotion ? 0 : 350} /> €
             </span>
           </div>
           <div className="flex justify-between text-slate-600">
-            <span>Hinnanguline paigaldus</span>
+            <span>{t.summaryPaigaldus}</span>
             <span className="font-semibold tabular-nums text-slate-900">
               <CountUp value={paigaldusHinnangEur} duration={reducedMotion ? 0 : 350} /> €
             </span>
           </div>
           <div className="flex justify-between text-slate-600">
-            <span>Hinnanguline kogukulu (ilma KM)</span>
+            <span>{t.summaryKogukulu}</span>
             <span className="font-semibold tabular-nums text-slate-900">
               <CountUp value={Math.round(kokkuIlmaKm)} duration={reducedMotion ? 0 : 350} /> €
             </span>
           </div>
           <div className="flex justify-between text-slate-600">
-            <span>Käibemaks (24%)</span>
+            <span>{t.summaryKm}</span>
             <span className="font-semibold tabular-nums text-slate-900">
               <CountUp value={kmEur} duration={reducedMotion ? 0 : 350} /> €
             </span>
           </div>
-          <p className="pt-1 text-xs text-slate-500">Töö hind sõltub objekti eripäradest.</p>
+          <p className="pt-1 text-xs text-slate-500">{t.summaryNote}</p>
           <div className="flex justify-between border-t-2 border-primary-200 pt-4 text-lg font-bold text-slate-900">
-            <span>Hinnad koos käibemaksuga (24%)</span>
+            <span>{t.summaryTotalLabel}</span>
             <span className="tabular-nums text-primary-700">
               <CountUp value={Math.round(kokkuKoosKm)} duration={reducedMotion ? 0 : 400} /> €
             </span>
           </div>
-          <p className="text-sm font-medium text-slate-600">≈ <CountUp value={eurPerM2} duration={reducedMotion ? 0 : 350} decimals={1} /> €/m²</p>
+          <p className="text-sm font-medium text-slate-600">≈ <CountUp value={eurPerM2} duration={reducedMotion ? 0 : 350} decimals={1} /> {t.summaryPerM2}</p>
         </div>
         <Button
           type="button"
@@ -468,9 +468,9 @@ export function PurVahuHindCalculator() {
           size="lg"
           className="mt-6 w-full min-h-[52px] text-base shadow-md"
           onClick={() => { setSubmitStatus("idle"); setSubmitError(""); setModalOpen(true); }}
-          aria-label="Saada päring nende mõõtudega"
+          aria-label={t.sendInquiryAria}
         >
-          Saada päring nende mõõtudega
+          {t.sendInquiry}
         </Button>
       </motion.div>
       </div>
@@ -498,12 +498,12 @@ export function PurVahuHindCalculator() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-                <h2 id="modal-title" className="text-lg font-bold text-slate-900">Saada päring</h2>
+                <h2 id="modal-title" className="text-lg font-bold text-slate-900">{t.modalTitle}</h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
                   className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                  aria-label="Sulge"
+                  aria-label={t.modalClose}
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -511,9 +511,9 @@ export function PurVahuHindCalculator() {
               <div className="p-6">
                 {submitStatus === "success" ? (
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center text-emerald-800">
-                    <h3 className="text-xl font-bold">Täname!</h3>
-                    <p className="mt-2">Päring on saadetud. Võtame ühendust lühikese aja jooksul.</p>
-                    <Button type="button" className="mt-6" onClick={() => setModalOpen(false)}>Sulge</Button>
+                    <h3 className="text-xl font-bold">{t.successTitle}</h3>
+                    <p className="mt-2">{t.successMessage}</p>
+                    <Button type="button" className="mt-6" onClick={() => setModalOpen(false)}>{t.closeButton}</Button>
                   </div>
                 ) : (
                   <PurVahuHindForm
@@ -526,6 +526,7 @@ export function PurVahuHindCalculator() {
                     onSubmitting={() => setSubmitStatus("submitting")}
                     submitStatus={submitStatus}
                     submitError={submitError}
+                    locale={locale}
                   />
                 )}
               </div>
@@ -547,6 +548,7 @@ function PurVahuHindForm({
   onSubmitting,
   submitStatus,
   submitError,
+  locale,
 }: {
   summaryText: string;
   thermograafia: boolean;
@@ -557,7 +559,9 @@ function PurVahuHindForm({
   onSubmitting: () => void;
   submitStatus: string;
   submitError: string;
+  locale: "et" | "fi";
 }) {
+  const formT = getMessages(locale).form;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -591,39 +595,39 @@ function PurVahuHindForm({
       const res = await fetch(formSubmitUrl, { method: "POST", body: submitBody });
       const data = (await res.json().catch(() => ({}))) as { success?: boolean; message?: string };
       if (!res.ok || data.success === false) {
-        onError(data.message ?? "Midagi läks valesti. Proovi uuesti.");
+        onError(data.message ?? formT.errorGeneric);
         return;
       }
       onSuccess();
     } catch {
-      onError("Võrgu viga. Proovi uuesti.");
+      onError(formT.errorNetwork);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="pv-name" className="block text-sm font-medium text-slate-700">Nimi *</label>
+        <label htmlFor="pv-name" className="block text-sm font-medium text-slate-700">{formT.name} *</label>
         <input id="pv-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" autoComplete="name" />
       </div>
       <div>
-        <label htmlFor="pv-email" className="block text-sm font-medium text-slate-700">E-mail *</label>
+        <label htmlFor="pv-email" className="block text-sm font-medium text-slate-700">{formT.email} *</label>
         <input id="pv-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" autoComplete="email" />
       </div>
       <div>
-        <label htmlFor="pv-phone" className="block text-sm font-medium text-slate-700">Telefon</label>
+        <label htmlFor="pv-phone" className="block text-sm font-medium text-slate-700">{formT.phone}</label>
         <input id="pv-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" autoComplete="tel" />
       </div>
       <div>
-        <label htmlFor="pv-aadress" className="block text-sm font-medium text-slate-700">Aadress või vald</label>
-        <input id="pv-aadress" type="text" value={aadress} onChange={(e) => setAadress(e.target.value)} placeholder="Objekt asub..." className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" />
+        <label htmlFor="pv-aadress" className="block text-sm font-medium text-slate-700">{formT.addressOrRegion}</label>
+        <input id="pv-aadress" type="text" value={aadress} onChange={(e) => setAadress(e.target.value)} placeholder={formT.placeholderAddress} className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" />
       </div>
       <div>
-        <label htmlFor="pv-message" className="block text-sm font-medium text-slate-700">Lisainfo</label>
-        <textarea id="pv-message" rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Täiendav info objektist või tööst..." className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" />
+        <label htmlFor="pv-message" className="block text-sm font-medium text-slate-700">{formT.extraInfo}</label>
+        <textarea id="pv-message" rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={formT.placeholderExtraInfo} className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-primary-500 focus:ring-primary-500" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Pildid (valikuline)</label>
+        <label className="block text-sm font-medium text-slate-700">{formT.images}</label>
         <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} className="mt-1 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-primary-700" />
       </div>
       <div className="flex items-start gap-3">
@@ -635,7 +639,7 @@ function PurVahuHindForm({
           className="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
         />
         <label htmlFor="pv-thermograafia" className="text-sm text-slate-700">
-          Soovin termograafiat (tasuline teenus, alates 250 € / objekt)
+          {formT.thermografiaCheck}
         </label>
       </div>
       <div className="flex justify-center">
@@ -648,7 +652,7 @@ function PurVahuHindForm({
       </div>
       {submitError && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{submitError}</p>}
       <Button type="submit" variant="primary" size="lg" className="w-full min-h-[48px]" disabled={submitStatus === "submitting" || !turnstileToken}>
-        {submitStatus === "submitting" ? "Saadan..." : "Saada päring"}
+        {submitStatus === "submitting" ? formT.sending : formT.send}
       </Button>
     </form>
   );

@@ -25,6 +25,60 @@ export const services = {
     ],
     ctaTitle: "Soovid PUR-soojustust?",
     ctaDescription: "Küsi tasuta pakkumist või arvuta orientiirhind kalkulaatoriga.",
+    howItWorks: [
+      "Pihustatav vaht kinnitub aluspinnaga ilma lisakinnitusteta",
+      "Paisub paigaldamisel, täites praod ja liitekohad",
+      "Moodustab ühtse, vuugivaba soojustuskihi",
+      "Sobib nii horisontaalsetele kui vertikaalsetele pindadele",
+    ],
+    openVsClosed: {
+      intro: "Materjali valik tehakse vastavalt objekti tehnilistele tingimustele ja kasutusotstarbele.",
+      open: {
+        title: "Avatud pooridega PUR",
+        desc: "Sobib sisetöödele ja konstruktsioonidele, kus oluline on hingavus – näiteks pööningud, katusealused.",
+      },
+      closed: {
+        title: "Suletud pooridega PUR",
+        desc: "Tihedam, suurema veekindluse ja mehaanilise vastupidavusega. Sobib vundamentidele, soklitele ja tehniliselt nõudlikematesse kohtadesse.",
+      },
+    },
+    sprayVsInject: {
+      intro:
+        "PUR-soojustust rakendame kahel viisil – pihustamine avatud pindadele ja injekteerimine õõnsustesse. Valime meetodi vastavalt konstruktsioonile; vale meetod võib põhjustada niiskusprobleeme.",
+      whyMatters: "Vale meetodi kasutamine võib põhjustada niiskusprobleeme. Seetõttu valime alati lahenduse vastavalt konstruktsioonile.",
+      spray: {
+        title: "Pihustamine",
+        desc: "PUR-vaht kantakse avatud pinnale, kus see moodustab ühtlase ja õhukindla soojustuskihi.",
+        suitableLabel: "Sobib:",
+        suitableList: ["Pööningud", "Katusealused", "Lahtised seinakonstruktsioonid"],
+        benefitsLabel: "Eelised:",
+        benefitsList: ["Maksimaalne õhutihedus", "Kiire paigaldus", "Väga hea soojapidavus"],
+      },
+      inject: {
+        title: "Injekteerimine",
+        desc: "PUR-vaht süstitakse kinnistesse konstruktsiooniõõnsustesse väikeste avade kaudu, ilma lammutustöid tegemata.",
+        suitableLabel: "Sobib:",
+        suitableList: ["Seinaõõnsused", "Vahelaed", "Paneel- ja karkasskonstruktsioonid"],
+        benefitsLabel: "Eelised:",
+        benefitsList: ["Ideaalne renoveerimiseks", "Ei vaja seina avamist", "Taastab puuduva või vajunud soojustuse"],
+      },
+    },
+    thermography: {
+      title: "Termograafia ehk termopildistamine (tasuline lisateenus)",
+      intro:
+        "Termopildistamine spetsiaalse kaameraga – eraldi tasuline teenus (alates 250 € / objekt). Pärast soojustustöid saab tellida termopildistuse, kui soovitakse töö tulemust visuaalselt kontrollida. Ei ole automaatselt osa soojustustöödest.",
+      list: [
+        "Tasuline teenus – tellitav eraldi või pärast PUR-töid",
+        "Termopildid ja lühike selgitus – visuaalne ülevaade",
+      ],
+      linkText: "Loe termograafiast",
+    },
+    whoIsItFor: [
+      "Eramajad ja korterelamud",
+      "Arendajad ja ehitusettevõtted",
+      "Tootmis- ja laohooned",
+      "Tehnilised rajatised",
+    ],
   },
   polurea: {
     slug: "polurea",
@@ -51,6 +105,7 @@ export const services = {
     ],
     ctaTitle: "Vajad polükarbamiid hüdroisolatsiooni?",
     ctaDescription: "Saada päring koos pindala ja pinna tüübiga – vastame kiiresti.",
+    note: "Polükarbamiid (tuntud ka kui polüurea kate) on tehniline nimetus – me kasutame mõlemat nimetust. Sisu on sama: tugev, veekindel ja elastne kate.",
   },
 } as const;
 

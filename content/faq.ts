@@ -41,6 +41,20 @@ export const faqHome = [
   },
 ] as const;
 
+/** Kotisivun KKK suomeksi */
+export const faqHomeFi = [
+  { q: "Mikä on PUR-eristys?", a: "PUR (polyuretaanivaahto) on ruiskutettava tai injektoitava eristysmateriaali, joka tarjoaa erittäin hyvän lämmöneristyksen ohuella paksuudella. Ruiskutus – ullakoille, katoille, avoimille seinille; injektointi – seinäonteloihin ja välipohjiin (ei sovi perustuksille)." },
+  { q: "Mikä on injektoitava PUR-eristys?", a: "Injektoitava PUR ruiskutetaan onteloihin (seinäontelot, välipohjat, paneeli- ja runkorakenteet) pienten reikien kautta ilman purkutöitä. Ei käytetä perustuksilla eikä maanpinnan kanssa kosketuksissa olevissa rakenteissa." },
+  { q: "Milloin käytetään ruiskutusta ja milloin injektointia?", a: "Ruiskutus – kun pinta on avoin (ullakko, katto, avoin seinä). Injektointi – kun eristetään seinäonteloita tai välipohjan onteloita. Valitsemme menetelmän rakenteen mukaan; tarvittaessa käytämme termografiaa ja rakenteen arviointia." },
+  { q: "Sopiiko PUR-vaahdon injektointi perustuksille?", a: "Ei. Perustukset vaativat erilaisia ratkaisuja kosteus- ja maaperäolosuhteista riippuen. PUR-injektointia ei käytetä perustuksilla eikä maanpinnan kanssa kosketuksissa oleville sokkeleille." },
+  { q: "Mistä tiedän, sopiiko talolleni ruiskutus vai injektointi?", a: "Tarvittaessa voi tilata maksullisen termografiapalvelun tai rakenteen arvioinnin. Valitsemme menetelmän rakennuksen fysiikan mukaan – väärä menetelmä voi aiheuttaa kosteusongelmia." },
+  { q: "Mikä on polyureapinnoite ja mihin sitä käytetään?", a: "Polyureapinnoite on kestävä, vedenpitävä ja joustava pinnoite. Sitä käytetään hydroeristykseen katoilla, säiliöissä, uima-altaissa ja lattioilla." },
+  { q: "Milloin on sopiva aika tilata eristys tai hydroeristys?", a: "Eristystä ja polyureaa voidaan levittää lämpiminä kuivina kuukausina. Suositellaan tilaamaan etukäteen työn suunnittelua varten." },
+  { q: "Palveletteko koko Suomea?", a: "Kyllä, toimimme ympäri Suomea. Tarkemman toimialueen ja hinnan saat tarjouspyynnöllä." },
+  { q: "Miten saada tarjous?", a: "Täytä yhteystodilomake tai soita. Voit käyttää myös hintalaskuria saadaksesi suuntaa antavan hinnan ennen pyyntöä." },
+  { q: "Auttaako termografia eristyksen laadun tarkastuksessa?", a: "Kyllä. Termografia on maksullinen palvelu (alk. 250 € / kohde). Eristystyön jälkeen voi tilata lämpökuvauksen erikseen, jos halutaan tarkastaa työn tulos visuaalisesti. Ei kuulu automaattisesti mukaan." },
+] as const;
+
 export const faqThermograafia = [
   {
     q: "Mis on termograafia?",
@@ -132,6 +146,27 @@ export const faqPolurea = [
     q: "Sobib polükarbamiid basseinidele?",
     a: "Jah, polükarbamiid (polüurea kate) on laialt kasutusel basseinide sisekatte ja hüdroisolatsioonina. See on kloriidikindel ja vastupidav.",
   },
+] as const;
+
+/** PUR-soojustuse KKK soomeksi */
+export const faqPurFi = [
+  { q: "Mitä eroa on ruiskutettavalla ja injektoitavalla PUR-eristyksellä?", a: "Ruiskutettava PUR levitetään avoimelle pinnalle (ullakko, katto, avoin seinä) – tasainen ja ilmatiivis kerros. Injektoitava PUR ruiskutetaan onteloihin (seinäontelot, välipohjat, paneeli- ja runkorakenteet) pienten reikien kautta; ei sovi perustuksille. Valitsemme menetelmän rakenteen mukaan." },
+  { q: "Milloin käytetään injektoitavaa PUR-eristystä?", a: "Injektointi sopii seinäonteloiden, välipohjaonteloiden ja peruskorjattavien paneeli- ja runkorakenteiden eristykseen ilman seinän avaamista. Ei käytetä perustuksilla eikä maanpinnan kanssa kosketuksissa olevilla sokkeleilla." },
+  { q: "Sopiiko PUR-vaahdon injektointi perustuksille?", a: "Ei. Perustukset vaativat erilaisia ratkaisuja kosteus- ja maaperäolosuhteista riippuen. Injektointia käytetään vain sopivissa ontelorakenteissa." },
+  { q: "Mistä tiedän, sopiiko talolleni ruiskutus vai injektointi?", a: "Tarvittaessa voi tilata maksullisen termografiapalvelun tai rakenteen arvioinnin. Valitsemme menetelmän rakennuksen fysiikan mukaan – tarjoamme rakenteelle sopivan menetelmän." },
+  { q: "Vahingoittaako injektoitava PUR rakennetta?", a: "Ei. PUR-vaahto laajenee hallitusti ja kiinnittyy onteloiden seiniin. Ammattimaisesti tehty injektointi ei aiheuta paineita eikä halkeamia. Käytämme sopivaa vaahtotyppiä ja määrää." },
+  { q: "Kuinka paksu PUR-kerros tarvitaan?", a: "Tyypillisesti 100–250 mm rakenteen ja eristysvaatimusten mukaan. Ullakolla 150–200 mm riittää usein." },
+  { q: "Sopiiko PUR vanhalle katolle?", a: "Kyllä, PUR levitetään usein olemassa olevalle pinnalle ilman laajaa purkutöitä. Pinnan tulee olla puhdas ja kuiva." },
+  { q: "Kuinka kauan työ kestää?", a: "Riippuu pinta-alasta ja monimutkaisuudesta. Keskimääräinen omakotitalon ullakko voi olla valmis 1–2 päivässä." },
+  { q: "Voiko eristyksen laatua tarkastaa termografialla?", a: "Kyllä. Termografia on maksullinen lisäpalvelu (alk. 250 € / kohde). PUR-eristyksen jälkeen voi tilata lämpökuvauksen erikseen, jos halutaan tarkastaa työn tulos visuaalisesti. Ei kuulu automaattisesti työhön." },
+] as const;
+
+/** Polüurea KKK soomeksi */
+export const faqPolureaFi = [
+  { q: "Mikä on polyureapinnoite?", a: "Polyureapinnoite on tekninen termi polyureatyypin pinnoitteille. Se on kestävä, joustava ja vedenpitävä pinnoite – käytössä katoilla, säiliöissä, uima-altaissa ja lattioilla." },
+  { q: "Kuinka paksu on polyureakerros?", a: "Tyypillisesti 1–3 mm. Suurempaa suojaa varten voidaan levittää useita kerroksia." },
+  { q: "Kestääkö polyurea sateen?", a: "Kyllä, kuivumisen jälkeen pinnoite on täysin vedenpitävä. Kuivumisaika riippuu ilmastosta ja paksuudesta, yleensä muutamia tunteja." },
+  { q: "Sopiiko polyurea uima-altaisiin?", a: "Kyllä, polyureapinnoitetta käytetään laajasti uima-altaiden sisäpinnoituksessa ja hydroeristyksessä. Se on kloridikestävä ja kestävä." },
 ] as const;
 
 export const faqJarelmaks = [
