@@ -13,6 +13,12 @@ const Turnstile = dynamic(
   { ssr: false }
 );
 
+const TURNSTILE_TEST_KEY = "1x00000000000000000000AA";
+const isTestKey = () => {
+  const key = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  return !key || key === TURNSTILE_TEST_KEY;
+};
+
 export interface LeadFormPrefill {
   type?: string;
   pindala_m2?: string;
@@ -139,7 +145,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
             required
             value={form.name}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 text-base shadow-sm focus:border-primary-500 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-500 focus:ring-primary-500"
             autoComplete="name"
           />
         </div>
@@ -154,7 +160,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
             required
             value={form.email}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 text-base shadow-sm focus:border-primary-500 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-500 focus:ring-primary-500"
             autoComplete="email"
           />
         </div>
@@ -169,7 +175,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
           type="tel"
           value={form.phone}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 text-base shadow-sm focus:border-primary-500 focus:ring-primary-500"
+          className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-500 focus:ring-primary-500"
           autoComplete="tel"
         />
       </div>
@@ -197,7 +203,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
           rows={4}
           value={form.message}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-4 py-3 text-base shadow-sm focus:border-primary-500 focus:ring-primary-500"
+          className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-500 focus:ring-primary-500"
           placeholder="Kirjelda objekti ja soovitud tööd..."
         />
       </div>
@@ -234,7 +240,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
 
       <div className="flex justify-center">
         <Turnstile
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA"}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_TEST_KEY}
           onSuccess={(token) => setForm((prev) => ({ ...prev, turnstileToken: token }))}
           onExpire={() => setForm((prev) => ({ ...prev, turnstileToken: "" }))}
           options={{
@@ -253,7 +259,7 @@ export function LeadForm({ prefill = {}, className, maxImages = 6 }: LeadFormPro
         variant="primary"
         size="lg"
         className="w-full min-h-[48px] sm:w-auto"
-        disabled={status === "submitting" || !form.turnstileToken}
+        disabled={status === "submitting" || (!isTestKey() && !form.turnstileToken)}
       >
         {status === "submitting" ? "Saadan..." : "Saada päring"}
       </Button>
