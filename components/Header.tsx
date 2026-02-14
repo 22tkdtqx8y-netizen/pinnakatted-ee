@@ -51,7 +51,9 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LangSwitcher />
+          <div className="hidden md:block">
+            <LangSwitcher />
+          </div>
           <ButtonLink href="/kontakt" size="sm" className="hidden sm:inline-flex whitespace-nowrap">
             {t.kusiPakkumist}
           </ButtonLink>
@@ -96,7 +98,10 @@ export function Header() {
                 {t[link.key]}
               </Link>
             ))}
-            <div className="mt-2 flex flex-col gap-2 border-t border-slate-200 pt-4">
+            <div className="mt-3 flex justify-center border-t border-slate-200 pt-4">
+              <LangSwitcher />
+            </div>
+            <div className="mt-2 flex flex-col gap-2 pt-2">
               <ButtonLink href="/kontakt" className="w-full justify-center" onClick={() => setMobileOpen(false)}>
                 {t.kusiPakkumist}
               </ButtonLink>
